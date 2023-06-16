@@ -2,68 +2,34 @@
 
 # Todo:
 #   - restore and save data functions (json serialization)
-#   - to, add, edit, remove commands
 
-from bookmark_list import BookmarkList
-import argparse
-import sys
+from argparser import args # Creates parsers, parses arguments and stores them in args
+from bookmark_collection import BookmarkCollection
+import actions
+import data_operations
 
-# List of users bookmarks
-bk_list = BookmarkList()
+if __name__ == "__main__":
+    # restore data and store it into object (if file is empty, empty dict)
+    bookmarks = BookmarkCollection(data_operations.restore_data())
+    
+    # Check the selected action
+    if args.action == 'to':
+        actions.to(bookmarks, args.bookmark, args.new)
 
-# main parser
-parser = argparse.ArgumentParser()
+    elif args.action == 'add':
+        actions.add(bookmarks, args.bookmark_name, args.bookmark_link)
 
-# sub parsers for different actions
-subparsers = parser.add_subparsers(dest='action')
+    elif args.action == 'edit':
+        actions.edit(bookmarks, args.bookmark)
 
-# "to" subparser
-to_parser = subparsers.add_parser('to', help='Open a bookmark')
-to_parser.add_argument('bookmark_index', type=int, help='Index of the bookmark you would like to open')
-to_parser.add_argument('-p', '--private', action='store_true', help='Open the bookmark in a private tab')
+    elif args.action == 'remove':
+        actions.remove(bookmarks, args.bookmark)
 
-# "add" subparser
-add_link_parser = subparsers.add_parser('add', help='Add a bookmark')
-add_link_parser.add_argument('bookmark_name', help='The name of the bookmark (wrap in quotes if it is multiple words)')
-add_link_parser.add_argument('bookmark_link', help='The link to add')
-
-# "edit" subparser
-edit_parser = subparsers.add_parser('edit', help='edit a bookmark')
-edit_parser.add_argument('bookmark_index', type=int, help='Index of the bookmark you would like to edit')
-
-# "remove" subparser
-remove_parser = subparsers.add_parser('remove', help='Remove a bookmark')
-remove_parser.add_argument('bookmark_index', type=int, help='Index of the bookmark you would like to remove')
-
-# "list" subparser
-list_bookmarks_parser = subparsers.add_parser('list', help='List your bookmarks')
-
-# Parse the command-line arguments
-args = parser.parse_args()
-
-# Check the selected action
-if args.action == 'to':
-    if args.private:
-        # sys call to open browser to specific link in private tab
-        pass
+    elif args.action == 'list':
+        actions.list(bookmarks)
+    
     else:
-        # sys call to open browser to specific link
-        pass
-    # deal with potential errors (fail to open browser or link etc)
+        print("No arguments provided. Try enderpearl.py --help")
+        exit(0)
 
-elif args.action == 'add':
-    # prompt for bookmark name and link
-    # check link validity
-    # create bookmark and add it to the list
-    pass
-
-elif args.action == 'edit':
-    # give prompts, check input validity and update info
-    pass
-
-elif args.action == 'remove':
-    # give prompts, check input validity and update info
-    pass
-
-elif args.action == 'list':
-    bk_list.print_bookmarks()
+    data_operations.save_data(bookmarks)

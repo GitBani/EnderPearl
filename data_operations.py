@@ -1,9 +1,15 @@
 import json
-import sys
-from bookmark_list import BookmarkList 
+from bookmark_collection import BookmarkCollection 
 
-def restore_data(bk_list: BookmarkList):
-    pass
 
-def save_data(bk_list: BookmarkList):
-    pass
+def restore_data():
+    with open("/home/bani/code/python/EnderPearl/data.json", "r") as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
+
+
+def save_data(bks: BookmarkCollection):
+    with open("/home/bani/code/python/EnderPearl/data.json", "w") as f:
+        json.dump(bks.get_dict(), f)
