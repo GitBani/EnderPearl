@@ -1,8 +1,5 @@
 #!/usr/bin/python3
 
-# Todo:
-#   - restore and save data functions (json serialization)
-
 from argparser import args # Creates parsers, parses arguments and stores them in args
 from bookmark_collection import BookmarkCollection
 import actions
